@@ -1,24 +1,19 @@
 import json
 from django.http import JsonResponse
 
+from products.models import Product
+
 def api_home(request, *args, **kwargs):
-    # requset -> HttpRequest-> Django
-    # print(dir(request))
-    # request.body
-    print(request.GET) #url query params
-    print(request.POST) #
-    body = request.body #by string of JSON data
-    data = {}
-    try:
-        data = json.loads(body) # string of JSON data -> python dict
-        #Để chuyển đổi chuỗi bytes này thành một đối tượng JSON trong Python, ta có thể sử dụng module json của Python và phương thức loads() để phân tích cú pháp JSON
-    except:
-        pass
-    print(data)
-    #data['headers'] = request.headers #request.META
-    data['params']= dict(request.GET)
-    data['headers']= dict(request.headers)
-    data['content_type'] = request.content_type
+    model_data = Product.objects.all().order_by("?").first()
     
-    #context={"message":"day la demo api"}
+    data={}
+    if model_data:
+        data['id'] = model_data.id
+        data['title'] = model_data.title
+        data['content'] = model_data.content
+        data['price'] = model_data.price
+        
+        # model instance (model_data)
+        # turn a python dict
+        # return JSON to my client
     return JsonResponse(data)
